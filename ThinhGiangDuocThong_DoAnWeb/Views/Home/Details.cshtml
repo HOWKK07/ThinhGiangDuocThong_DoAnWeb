@@ -1,0 +1,213 @@
+@model ThinhGiangDuocThong_DoAnWeb.Models.Product
+@{
+    ViewData["Title"] = Model.Name + " - Bán Sách.com";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <span style="font-size:1rem;">🏠</span> Trang chủ
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="#" class="text-decoration-none">
+                    <span style="font-size:1rem;">📚</span> Sách
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-0">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Name" 
+                             style="width: 100%; height: 500px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center justify-content-center" 
+                             style="height: 500px; background: #f8f9fa; border-radius: 0.375rem;">
+                            <span style="font-size:8rem; color: #dee2e6;">📚</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Information -->
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <!-- Product Title -->
+                    <h1 class="fw-bold mb-3" style="color: #2c3e50;">@Model.Name</h1>
+                    
+                    <!-- Category Badge -->
+                    @if (Model.Category != null)
+                    {
+                        <div class="mb-3">
+                            <span class="badge bg-primary fs-6 px-3 py-2">
+                                <span style="font-size:1rem;">📂</span> @Model.Category.Name
+                            </span>
+                        </div>
+                    }
+
+                    <!-- Price -->
+                    <div class="mb-4">
+                        <span class="display-6 fw-bold text-success">
+                            <span style="font-size:2rem;">💰</span> @Model.Price.ToString("N0") ₫
+                        </span>
+                    </div>
+
+                    <!-- Book Details -->
+                    <div class="row mb-4">
+                        @if (!string.IsNullOrEmpty(Model.Author))
+                        {
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2" style="font-size:1.2rem;">✍️</span>
+                                    <div>
+                                        <small class="text-muted d-block">Tác giả</small>
+                                        <strong>@Model.Author</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (!string.IsNullOrEmpty(Model.Publisher))
+                        {
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2" style="font-size:1.2rem;">🏢</span>
+                                    <div>
+                                        <small class="text-muted d-block">Nhà xuất bản</small>
+                                        <strong>@Model.Publisher</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (Model.PublicationYear.HasValue)
+                        {
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2" style="font-size:1.2rem;">📅</span>
+                                    <div>
+                                        <small class="text-muted d-block">Năm xuất bản</small>
+                                        <strong>@Model.PublicationYear</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (!string.IsNullOrEmpty(Model.Language))
+                        {
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2" style="font-size:1.2rem;">🌐</span>
+                                    <div>
+                                        <small class="text-muted d-block">Ngôn ngữ</small>
+                                        <strong>@Model.Language</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Description -->
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <span style="font-size:1.2rem;">📖</span> Mô tả sản phẩm
+                            </h5>
+                            <p class="text-muted" style="line-height: 1.8;">@Model.Description</p>
+                        </div>
+                    }
+
+                    <!-- Add to Cart Section -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">
+                                <span style="font-size:1.2rem;">🛒</span> Thêm vào giỏ hàng
+                            </h6>
+                            <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post" class="d-flex gap-3 align-items-end">
+                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <div class="flex-grow-1">
+                                    <label class="form-label fw-bold">Số lượng:</label>
+                                    <input type="number" name="quantity" value="1" min="1" max="99" 
+                                           class="form-control form-control-lg rounded-pill" 
+                                           style="width: 120px;" />
+                                </div>
+                                <button type="submit" class="btn btn-success btn-lg rounded-pill px-4 shadow-sm fw-bold">
+                                    <span style="font-size:1.3rem;">🛒</span> Thêm vào giỏ
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="p-3">
+                                <span style="font-size:2rem;">🚚</span>
+                                <div class="fw-bold">Giao hàng nhanh</div>
+                                <small class="text-muted">2-3 ngày</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3">
+                                <span style="font-size:2rem;">🔄</span>
+                                <div class="fw-bold">Đổi trả dễ dàng</div>
+                                <small class="text-muted">30 ngày</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3">
+                                <span style="font-size:2rem;">🛡️</span>
+                                <div class="fw-bold">Bảo hành chính hãng</div>
+                                <small class="text-muted">100%</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products Section (Placeholder) -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="fw-bold mb-4">
+                <span style="font-size:1.5rem;">📚</span> Sản phẩm liên quan
+            </h3>
+            <div class="alert alert-info text-center">
+                <span style="font-size:2rem;">🔍</span>
+                <h5>Tính năng đang phát triển</h5>
+                <p>Chúng tôi sẽ sớm thêm các sản phẩm liên quan để bạn khám phá thêm.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: #6c757d;
+    }
+    
+    .card {
+        transition: transform 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+</style> 

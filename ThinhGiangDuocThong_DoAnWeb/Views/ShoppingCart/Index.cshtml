@@ -1,0 +1,180 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ShoppingCart
+
+@{
+    ViewData["Title"] = "Giỏ Hàng";
+}
+
+<h2 class="text-center my-4" style="font-size:2rem;">
+    <span style="font-size:2rem;">🛒</span> Giỏ Hàng Của Bạn
+</h2>
+
+@if (Model.Items == null || !Model.Items.Any())
+{
+    <div class="alert alert-info text-center">
+        <span style="font-size:1.5rem;">🛍️</span> Giỏ hàng của bạn đang trống.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle shadow-sm bg-white">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th style="width:5%;">#</th>
+                    <th style="width:35%;">Tên sản phẩm</th>
+                    <th style="width:15%;">Số lượng</th>
+                    <th style="width:15%;">Giá</th>
+                    <th style="width:15%;">Thành tiền</th>
+                    <th style="width:15%;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int stt = 1;
+                    decimal tongTien = 0;
+                }
+                @foreach (var item in Model.Items)
+                {
+                    var thanhTien = item.Price * item.Quantity;
+                    tongTien += thanhTien;
+                    <tr class="text-center cart-item" data-product-id="@item.ProductId" data-price="@item.Price">
+                        <td>@stt</td>
+                        <td class="text-start">@item.Name</td>
+                        <td>
+                            <div class="d-flex justify-content-center align-items-center" style="gap: 0.5rem;">
+                                <div class="input-group" style="width: 110px;">
+                                    <input type="number" 
+                                           class="form-control text-center quantity-input" 
+                                           value="@item.Quantity" 
+                                           min="1" 
+                                           max="99" 
+                                           style="width: 50px;" 
+                                           data-product-id="@item.ProductId" />
+                                </div>
+                                <div class="update-status" id="status-@item.ProductId" style="display: none;">
+                                    <span class="badge bg-success">✓</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="price-cell">@item.Price.ToString("N2")</td>
+                        <td class="fw-bold subtotal-cell">@thanhTien.ToString("N2")</td>
+                        <td>
+                            <a asp-action="RemoveFromCart" asp-route-productId="@item.ProductId"
+                               class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm" aria-label="Xóa sản phẩm">
+                                <span style="font-size:1.1rem;">🗑️</span> Xóa
+                            </a>
+                        </td>
+                    </tr>
+                    stt++;
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <div class="fs-4" style="color:#d32f2f;">
+            <span style="font-size:1.5rem;">💰</span>
+            <b>Tổng tiền: <span id="total-amount">@tongTien.ToString("N2")</span></b>
+        </div>
+        <a asp-action="Checkout" class="btn btn-success btn-lg fw-bold shadow-sm">
+            <span style="font-size:1.2rem;">🛒</span> Tới trang thanh toán
+        </a>
+    </div>
+}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let updateTimeout;
+    
+    // Lắng nghe sự kiện thay đổi số lượng
+    document.querySelectorAll('.quantity-input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            const productId = this.dataset.productId;
+            const quantity = parseInt(this.value);
+            
+            // Validate số lượng
+            if (quantity < 1) {
+                this.value = 1;
+                return;
+            }
+            if (quantity > 99) {
+                this.value = 99;
+                return;
+            }
+            
+            // Cập nhật thành tiền ngay lập tức
+            updateSubtotal(this);
+            
+            // Hiển thị trạng thái cập nhật
+            showUpdateStatus(productId);
+            
+            // Gửi request cập nhật sau 1 giây (debounce)
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(function() {
+                updateCartQuantity(productId, quantity);
+            }, 1000);
+        });
+    });
+    
+    // Hàm cập nhật thành tiền cho một sản phẩm
+    function updateSubtotal(input) {
+        const row = input.closest('.cart-item');
+        const price = parseFloat(row.dataset.price);
+        const quantity = parseInt(input.value);
+        const subtotal = price * quantity;
+        
+        // Cập nhật thành tiền trong bảng
+        const subtotalCell = row.querySelector('.subtotal-cell');
+        subtotalCell.textContent = subtotal.toLocaleString('vi-VN', { minimumFractionDigits: 2 });
+        
+        // Cập nhật tổng tiền
+        updateTotalAmount();
+    }
+    
+    // Hàm cập nhật tổng tiền
+    function updateTotalAmount() {
+        let total = 0;
+        document.querySelectorAll('.subtotal-cell').forEach(function(cell) {
+            total += parseFloat(cell.textContent.replace(/[^\d.-]/g, ''));
+        });
+        
+        document.getElementById('total-amount').textContent = total.toLocaleString('vi-VN', { minimumFractionDigits: 2 });
+    }
+    
+    // Hàm hiển thị trạng thái cập nhật
+    function showUpdateStatus(productId) {
+        const statusElement = document.getElementById('status-' + productId);
+        statusElement.style.display = 'inline-block';
+        
+        // Ẩn trạng thái sau 2 giây
+        setTimeout(function() {
+            statusElement.style.display = 'none';
+        }, 2000);
+    }
+    
+    // Hàm gửi request cập nhật số lượng
+    function updateCartQuantity(productId, quantity) {
+        const formData = new FormData();
+        formData.append('productId', productId);
+        formData.append('quantity', quantity);
+        
+        fetch('/ShoppingCart/UpdateQuantity', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Cập nhật số lượng thành công');
+            } else {
+                console.error('Lỗi khi cập nhật số lượng');
+                // Có thể hiển thị thông báo lỗi cho người dùng
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi kết nối:', error);
+        });
+    }
+});
+</script>

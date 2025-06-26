@@ -1,0 +1,73 @@
+@model ThinhGiangDuocThong_DoAnWeb.Areas.Admin.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Xóa tài khoản";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Xác nhận xóa tài khoản
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h5>Bạn có chắc chắn muốn xóa tài khoản này?</h5>
+                        <p class="mb-0">Hành động này không thể hoàn tác.</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.UserName)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.UserName)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Email)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Email)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.FullName)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PhoneNumber)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.PhoneNumber)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Roles)</dt>
+                                <dd class="col-sm-8">
+                                    @if (!string.IsNullOrEmpty(Model.Roles))
+                                    {
+                                        <span class="badge bg-primary">@Model.Roles</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Không có vai trò</span>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" method="post" class="mt-4">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Hủy
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>
+                                Xác nhận xóa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
