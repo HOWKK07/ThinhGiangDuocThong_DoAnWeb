@@ -1,0 +1,94 @@
+﻿@model ThinhGiangDuocThong_DoAnWeb.Models.Product
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-7">
+        <div class="card shadow-lg">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Sửa sản phẩm</h4>
+            </div>
+            <div class="card-body bg-light">
+                <form asp-action="Update" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-bold">Tên sản phẩm</label>
+                        <input asp-for="Name" class="form-control rounded-pill shadow-sm" autocomplete="off" placeholder="Tên sản phẩm" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Price" class="form-label fw-bold">Giá</label>
+                        <input asp-for="Price" class="form-control rounded-pill shadow-sm" autocomplete="off" placeholder="Giá sản phẩm" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CategoryId" class="form-label fw-bold">Danh mục</label>
+                        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select rounded-pill shadow-sm"></select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Author" class="form-label fw-bold">Tác giả</label>
+                        <input asp-for="Author" class="form-control rounded-pill shadow-sm" autocomplete="off" placeholder="Tác giả" />
+                        <span asp-validation-for="Author" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Publisher" class="form-label fw-bold">Nhà xuất bản</label>
+                        <input asp-for="Publisher" class="form-control rounded-pill shadow-sm" autocomplete="off" placeholder="Nhà xuất bản" />
+                        <span asp-validation-for="Publisher" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PublicationYear" class="form-label fw-bold">Năm xuất bản</label>
+                        <input asp-for="PublicationYear" class="form-control rounded-pill shadow-sm" autocomplete="off" placeholder="Năm xuất bản" />
+                        <span asp-validation-for="PublicationYear" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Language" class="form-label fw-bold">Ngôn ngữ</label>
+                        <input asp-for="Language" class="form-control rounded-pill shadow-sm" autocomplete="off" placeholder="Ngôn ngữ" />
+                        <span asp-validation-for="Language" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-bold">Mô tả</label>
+                        <textarea asp-for="Description" class="form-control rounded shadow-sm" rows="3" placeholder="Mô tả sản phẩm"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ảnh đại diện hiện tại</label><br />
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" alt="Product Image" style="max-width:60px; border-radius:8px; box-shadow:0 2px 8px #ccc;" id="previewImage" />
+                        }
+                        else
+                        {
+                            <span class="text-muted">Không có ảnh</span>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Chọn ảnh mới (nếu muốn thay đổi)</label>
+                        <input type="file" name="imageUrl" class="form-control rounded-pill shadow-sm" />
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-warning rounded-pill px-4 shadow-sm">Cập nhật</button>
+                        <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Quay lại</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById("previewImage")
+                    if (img) img.src = e.target.result
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
