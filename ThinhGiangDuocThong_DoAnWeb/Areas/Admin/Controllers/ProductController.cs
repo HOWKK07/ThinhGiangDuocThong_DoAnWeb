@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace ThinhGiangDuocThong_DoAnWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IProductRepository _productRepository;

@@ -1,0 +1,213 @@
+@model ThinhGiangDuocThong_DoAnWeb.Models.Order
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng #" + Model.Id;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <span style="font-size:2rem;">📋</span> Chi Tiết Đơn Hàng #@Model.Id
+                </h2>
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+                    <span style="font-size:1.1rem;">⬅️</span> Quay lại danh sách
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- Order Information -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <span style="font-size:1.2rem;">📦</span> Thông Tin Đơn Hàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-sm-4 fw-bold">Mã đơn hàng:</div>
+                                <div class="col-sm-8">
+                                    <span class="badge bg-primary fs-6">#@Model.Id</span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4 fw-bold">Ngày đặt:</div>
+                                <div class="col-sm-8">
+                                    <span style="font-size:1rem;">📅</span>
+                                    @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4 fw-bold">Tổng tiền:</div>
+                                <div class="col-sm-8">
+                                    <span class="fw-bold text-success fs-5">
+                                        <span style="font-size:1.2rem;">💰</span>
+                                        @Model.TotalPrice.ToString("N0") ₫
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4 fw-bold">Địa chỉ giao:</div>
+                                <div class="col-sm-8">
+                                    @if (!string.IsNullOrEmpty(Model.ShippingAddress))
+                                    {
+                                        <span style="font-size:1rem;">🏠</span>
+                                        @Model.ShippingAddress
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa có</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4 fw-bold">Ghi chú:</div>
+                                <div class="col-sm-8">
+                                    @if (!string.IsNullOrEmpty(Model.Notes))
+                                    {
+                                        <span style="font-size:1rem;">📝</span>
+                                        @Model.Notes
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không có</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Information -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <span style="font-size:1.2rem;">👤</span> Thông Tin Khách Hàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.ApplicationUser != null)
+                            {
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 fw-bold">Tên đăng nhập:</div>
+                                    <div class="col-sm-8">@Model.ApplicationUser.UserName</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 fw-bold">Email:</div>
+                                    <div class="col-sm-8">@Model.ApplicationUser.Email</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 fw-bold">Số điện thoại:</div>
+                                    <div class="col-sm-8">
+                                        @if (!string.IsNullOrEmpty(Model.ApplicationUser.PhoneNumber))
+                                        {
+                                            @Model.ApplicationUser.PhoneNumber
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Chưa có</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    <span style="font-size:1.2rem;">⚠️</span>
+                                    Không tìm thấy thông tin khách hàng
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <span style="font-size:1.2rem;">🛍️</span> Chi Tiết Sản Phẩm
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.OrderDetails != null && Model.OrderDetails.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int stt = 1;
+                                    }
+                                    @foreach (var item in Model.OrderDetails)
+                                    {
+                                        var thanhTien = item.Price * item.Quantity;
+                                        <tr>
+                                            <td>@stt</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                                    {
+                                                        <img src="@item.Product.ImageUrl" alt="@item.Product.Name" 
+                                                             class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="me-3 d-flex align-items-center justify-content-center" 
+                                                             style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 5px;">
+                                                            <span style="font-size:1.5rem;">📚</span>
+                                                        </div>
+                                                    }
+                                                    <div>
+                                                        <strong>@item.Product?.Name</strong>
+                                                        @if (!string.IsNullOrEmpty(item.Product?.Author))
+                                                        {
+                                                            <br />
+                                                            <small class="text-muted">Tác giả: @item.Product.Author</small>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>@item.Price.ToString("N0") ₫</td>
+                                            <td>
+                                                <span class="badge bg-primary">@item.Quantity</span>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-success">@thanhTien.ToString("N0") ₫</span>
+                                            </td>
+                                        </tr>
+                                        stt++;
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                                        <td class="fw-bold text-success fs-5">@Model.TotalPrice.ToString("N0") ₫</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info text-center">
+                            <span style="font-size:2rem;">📦</span>
+                            <h5>Không có sản phẩm nào trong đơn hàng</h5>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

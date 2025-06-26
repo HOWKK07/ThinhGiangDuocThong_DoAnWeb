@@ -1,0 +1,107 @@
+@model IEnumerable<ThinhGiangDuocThong_DoAnWeb.Areas.Admin.Models.UserViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">Quản lý tài khoản</h1>
+    
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-users me-1"></i>
+                    Danh sách tài khoản
+                </div>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Thêm tài khoản mới
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="usersTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.UserName)</th>
+                            <th>@Html.DisplayNameFor(model => model.FullName)</th>
+                            <th>@Html.DisplayNameFor(model => model.Email)</th>
+                            <th>@Html.DisplayNameFor(model => model.PhoneNumber)</th>
+                            <th>@Html.DisplayNameFor(model => model.Address)</th>
+                            <th>@Html.DisplayNameFor(model => model.Age)</th>
+                            <th>@Html.DisplayNameFor(model => model.Roles)</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Age)</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Roles))
+                                    {
+                                        <span class="badge bg-primary">@item.Roles</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Không có vai trò</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#usersTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json"
+                },
+                "pageLength": 10,
+                "order": [[1, "asc"]]
+            });
+        });
+    </script>
+} 

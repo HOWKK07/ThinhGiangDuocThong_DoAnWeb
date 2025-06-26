@@ -1,0 +1,47 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Order
+@{
+    ViewData["Title"] = "Thanh Toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-7">
+        <div class="card shadow-lg">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <span style="font-size:1.5rem;">📝</span> Thông Tin Thanh Toán
+                </h4>
+            </div>
+            <div class="card-body bg-light">
+                <form asp-action="Checkout" method="post" autocomplete="off">
+                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress" class="form-label fw-bold">
+                            <span style="font-size:1.2rem;">🏠</span> Địa chỉ giao hàng
+                        </label>
+                        <input asp-for="ShippingAddress" class="form-control rounded-pill shadow-sm" placeholder="Nhập địa chỉ nhận hàng..." />
+                        <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label fw-bold">
+                            <span style="font-size:1.2rem;">📝</span> Ghi chú cho đơn hàng
+                        </label>
+                        <textarea asp-for="Notes" class="form-control rounded shadow-sm" rows="3" placeholder="Ghi chú thêm (nếu có)..."></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                            <span style="font-size:1.1rem;">⬅️</span> Quay lại giỏ hàng
+                        </a>
+                        <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold">
+                            <span style="font-size:1.2rem;">💳</span> Đặt hàng
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
