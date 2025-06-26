@@ -11,11 +11,36 @@
                 <a asp-area="Admin" asp-controller="Product" asp-action="Add" class="btn btn-success rounded-pill px-4 shadow-sm">Thêm mới</a>
             </div>
             <div class="card-body bg-light">
-                <div class="mb-3">
-                    <input type="text" class="form-control rounded-pill shadow-sm" placeholder="Tìm kiếm sản phẩm..." autocomplete="off" />
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text" id="searchInput" class="form-control border-start-0 rounded-end" placeholder="Tìm kiếm sản phẩm..." autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="categoryFilter" class="form-select">
+                            <option value="">Tất cả danh mục</option>
+                            @foreach (var category in Model.Select(p => p.Category).Distinct().Where(c => c != null))
+                            {
+                                <option value="@category.Name">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="languageFilter" class="form-select">
+                            <option value="">Tất cả ngôn ngữ</option>
+                            @foreach (var language in Model.Select(p => p.Language).Distinct().Where(l => !string.IsNullOrEmpty(l)))
+                            {
+                                <option value="@language">@language</option>
+                            }
+                        </select>
+                    </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered rounded shadow-sm bg-white align-middle">
+                    <table class="table table-hover table-bordered rounded shadow-sm bg-white align-middle" id="productTable">
                         <thead class="table-primary">
                             <tr>
                                 <th>Tên sản phẩm</th>
@@ -33,7 +58,7 @@
                         <tbody>
                             @foreach (var product in Model)
                             {
-                                <tr>
+                                <tr data-category="@product.Category?.Name" data-language="@product.Language">
                                     <td>@product.Name</td>
                                     <td>@product.Price.ToString("N0")</td>
                                     <td>@product.Category?.Name</td>
@@ -68,7 +93,61 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="noResults" class="text-center py-4" style="display: none;">
+                    <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                    <h5 class="text-muted mt-2">Không tìm thấy sản phẩm nào</h5>
+                    <p class="text-muted">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const searchInput = $('#searchInput');
+            const categoryFilter = $('#categoryFilter');
+            const languageFilter = $('#languageFilter');
+            const productTable = $('#productTable tbody');
+            const noResults = $('#noResults');
+
+            function filterProducts() {
+                const searchTerm = searchInput.val().toLowerCase();
+                const selectedCategory = categoryFilter.val();
+                const selectedLanguage = languageFilter.val();
+                let visibleCount = 0;
+
+                productTable.find('tr').each(function() {
+                    const row = $(this);
+                    const productName = row.find('td:first').text().toLowerCase();
+                    const category = row.data('category');
+                    const language = row.data('language');
+                    
+                    const matchesSearch = productName.includes(searchTerm);
+                    const matchesCategory = !selectedCategory || category === selectedCategory;
+                    const matchesLanguage = !selectedLanguage || language === selectedLanguage;
+
+                    if (matchesSearch && matchesCategory && matchesLanguage) {
+                        row.show();
+                        visibleCount++;
+                    } else {
+                        row.hide();
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    productTable.hide();
+                    noResults.show();
+                } else {
+                    productTable.show();
+                    noResults.hide();
+                }
+            }
+
+            searchInput.on('input', filterProducts);
+            categoryFilter.on('change', filterProducts);
+            languageFilter.on('change', filterProducts);
+        });
+    </script>
+}

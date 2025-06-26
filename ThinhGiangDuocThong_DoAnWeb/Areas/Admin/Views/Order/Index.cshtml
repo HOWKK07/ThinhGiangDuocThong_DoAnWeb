@@ -23,8 +23,40 @@
                     }
                     else
                     {
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-search text-muted"></i>
+                                    </span>
+                                    <input type="text" id="searchInput" class="form-control border-start-0 rounded-end" placeholder="Tìm kiếm theo mã ĐH, khách hàng..." autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="dateFilter" class="form-select">
+                                    <option value="">Tất cả ngày</option>
+                                    <option value="today">Hôm nay</option>
+                                    <option value="week">Tuần này</option>
+                                    <option value="month">Tháng này</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="priceFilter" class="form-select">
+                                    <option value="">Tất cả giá</option>
+                                    <option value="0-100000">Dưới 100k</option>
+                                    <option value="100000-500000">100k - 500k</option>
+                                    <option value="500000-1000000">500k - 1M</option>
+                                    <option value="1000000+">Trên 1M</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="clearFilters" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-x-circle"></i> Xóa lọc
+                                </button>
+                            </div>
+                        </div>
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover" id="orderTable">
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Mã ĐH</th>
@@ -39,7 +71,10 @@
                                 <tbody>
                                     @foreach (var order in Model.OrderByDescending(o => o.OrderDate))
                                     {
-                                        <tr>
+                                        <tr data-order-id="@order.Id" 
+                                            data-customer="@order.ApplicationUser?.UserName" 
+                                            data-date="@order.OrderDate.ToString("yyyy-MM-dd")"
+                                            data-price="@order.TotalPrice">
                                             <td>
                                                 <span class="badge bg-primary fs-6">#@order.Id</span>
                                             </td>
@@ -99,9 +134,103 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div id="noResults" class="text-center py-4" style="display: none;">
+                            <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="text-muted mt-2">Không tìm thấy đơn hàng nào</h5>
+                            <p class="text-muted">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+                        </div>
                     }
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const searchInput = $('#searchInput');
+            const dateFilter = $('#dateFilter');
+            const priceFilter = $('#priceFilter');
+            const clearFilters = $('#clearFilters');
+            const orderTable = $('#orderTable tbody');
+            const noResults = $('#noResults');
+
+            function filterOrders() {
+                const searchTerm = searchInput.val().toLowerCase();
+                const selectedDate = dateFilter.val();
+                const selectedPrice = priceFilter.val();
+                let visibleCount = 0;
+
+                orderTable.find('tr').each(function() {
+                    const row = $(this);
+                    const orderId = row.data('order-id').toString();
+                    const customer = row.data('customer') || '';
+                    const orderDate = new Date(row.data('date'));
+                    const price = parseFloat(row.data('price')) || 0;
+                    
+                    const matchesSearch = orderId.includes(searchTerm) || 
+                                        customer.toLowerCase().includes(searchTerm);
+                    
+                    let matchesDate = true;
+                    if (selectedDate) {
+                        const today = new Date();
+                        const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                        const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+                        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                        
+                        switch(selectedDate) {
+                            case 'today':
+                                matchesDate = orderDate >= startOfDay;
+                                break;
+                            case 'week':
+                                matchesDate = orderDate >= startOfWeek;
+                                break;
+                            case 'month':
+                                matchesDate = orderDate >= startOfMonth;
+                                break;
+                        }
+                    }
+                    
+                    let matchesPrice = true;
+                    if (selectedPrice) {
+                        const priceRange = selectedPrice.split('-');
+                        if (priceRange.length === 2) {
+                            const minPrice = parseFloat(priceRange[0]);
+                            const maxPrice = parseFloat(priceRange[1]);
+                            matchesPrice = price >= minPrice && price <= maxPrice;
+                        } else if (selectedPrice === '1000000+') {
+                            matchesPrice = price >= 1000000;
+                        }
+                    }
+
+                    if (matchesSearch && matchesDate && matchesPrice) {
+                        row.show();
+                        visibleCount++;
+                    } else {
+                        row.hide();
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    orderTable.hide();
+                    noResults.show();
+                } else {
+                    orderTable.show();
+                    noResults.hide();
+                }
+            }
+
+            searchInput.on('input', filterOrders);
+            dateFilter.on('change', filterOrders);
+            priceFilter.on('change', filterOrders);
+            
+            clearFilters.on('click', function() {
+                searchInput.val('');
+                dateFilter.val('');
+                priceFilter.val('');
+                filterOrders();
+            });
+        });
+    </script>
+} 

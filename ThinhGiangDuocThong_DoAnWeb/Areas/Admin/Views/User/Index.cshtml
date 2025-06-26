@@ -36,6 +36,39 @@
             </div>
         </div>
         <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control border-start-0 rounded-end" placeholder="Tìm kiếm theo tên, email..." autocomplete="off" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="roleFilter" class="form-select">
+                        <option value="">Tất cả vai trò</option>
+                        @foreach (var role in Model.Select(u => u.Roles).Distinct().Where(r => !string.IsNullOrEmpty(r)))
+                        {
+                            <option value="@role">@role</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="ageFilter" class="form-select">
+                        <option value="">Tất cả độ tuổi</option>
+                        <option value="18-25">18-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="36-50">36-50</option>
+                        <option value="50+">50+</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button id="clearFilters" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-x-circle"></i> Xóa lọc
+                    </button>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="usersTable">
                     <thead class="table-dark">
@@ -53,7 +86,7 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr>
+                            <tr data-role="@item.Roles" data-age="@item.Age">
                                 <td>@Html.DisplayFor(modelItem => item.UserName)</td>
                                 <td>@Html.DisplayFor(modelItem => item.FullName)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Email)</td>
@@ -88,6 +121,11 @@
                     </tbody>
                 </table>
             </div>
+            <div id="noResults" class="text-center py-4" style="display: none;">
+                <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mt-2">Không tìm thấy tài khoản nào</h5>
+                <p class="text-muted">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+            </div>
         </div>
     </div>
 </div>
@@ -95,12 +133,81 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            const searchInput = $('#searchInput');
+            const roleFilter = $('#roleFilter');
+            const ageFilter = $('#ageFilter');
+            const clearFilters = $('#clearFilters');
+            const usersTable = $('#usersTable tbody');
+            const noResults = $('#noResults');
+
+            function filterUsers() {
+                const searchTerm = searchInput.val().toLowerCase();
+                const selectedRole = roleFilter.val();
+                const selectedAge = ageFilter.val();
+                let visibleCount = 0;
+
+                usersTable.find('tr').each(function() {
+                    const row = $(this);
+                    const userName = row.find('td:first').text().toLowerCase();
+                    const fullName = row.find('td:eq(1)').text().toLowerCase();
+                    const email = row.find('td:eq(2)').text().toLowerCase();
+                    const role = row.data('role');
+                    const age = parseInt(row.data('age')) || 0;
+                    
+                    const matchesSearch = userName.includes(searchTerm) || 
+                                        fullName.includes(searchTerm) || 
+                                        email.includes(searchTerm);
+                    const matchesRole = !selectedRole || role === selectedRole;
+                    
+                    let matchesAge = true;
+                    if (selectedAge) {
+                        const ageRange = selectedAge.split('-');
+                        if (ageRange.length === 2) {
+                            const minAge = parseInt(ageRange[0]);
+                            const maxAge = parseInt(ageRange[1]);
+                            matchesAge = age >= minAge && age <= maxAge;
+                        } else if (selectedAge === '50+') {
+                            matchesAge = age >= 50;
+                        }
+                    }
+
+                    if (matchesSearch && matchesRole && matchesAge) {
+                        row.show();
+                        visibleCount++;
+                    } else {
+                        row.hide();
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    usersTable.hide();
+                    noResults.show();
+                } else {
+                    usersTable.show();
+                    noResults.hide();
+                }
+            }
+
+            searchInput.on('input', filterUsers);
+            roleFilter.on('change', filterUsers);
+            ageFilter.on('change', filterUsers);
+            
+            clearFilters.on('click', function() {
+                searchInput.val('');
+                roleFilter.val('');
+                ageFilter.val('');
+                filterUsers();
+            });
+
+            // Initialize DataTable with custom search
             $('#usersTable').DataTable({
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json"
                 },
                 "pageLength": 10,
-                "order": [[1, "asc"]]
+                "order": [[1, "asc"]],
+                "dom": 'rt<"bottom"ip>', // Remove default search and length controls
+                "searching": false // Disable DataTable's built-in search
             });
         });
     </script>

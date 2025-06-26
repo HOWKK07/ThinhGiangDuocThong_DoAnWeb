@@ -10,29 +10,87 @@
         <a asp-action="Add" class="btn btn-success rounded-pill px-4 shadow-sm">+ Thêm mới</a>
     </div>
     <div class="card-body bg-light">
-        <div class="mb-3">
-            <input type="text" class="form-control rounded-pill shadow-sm" placeholder="Tìm kiếm danh mục..." autocomplete="off" />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" id="searchInput" class="form-control border-start-0 rounded-end" placeholder="Tìm kiếm danh mục..." autocomplete="off" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-end">
+                    <span class="text-muted align-self-center me-2">
+                        <i class="bi bi-info-circle"></i> Tìm kiếm theo tên danh mục
+                    </span>
+                </div>
+            </div>
         </div>
-        <table class="table table-hover table-bordered rounded shadow-sm bg-white">
-            <thead class="table-primary">
-                <tr>
-                    <th style="width:70%">Tên danh mục</th>
-                    <th style="width:30%">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var category in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered rounded shadow-sm bg-white" id="categoryTable">
+                <thead class="table-primary">
                     <tr>
-                        <td class="align-middle">@category.Name</td>
-                        <td class="align-middle">
-                            <a asp-action="Display" asp-route-id="@category.Id" class="btn btn-info btn-sm rounded-pill shadow-sm me-2">Xem</a>
-                            <a asp-action="Update" asp-route-id="@category.Id" class="btn btn-warning btn-sm rounded-pill shadow-sm me-2">Sửa</a>
-                            <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger btn-sm rounded-pill shadow-sm">Xóa</a>
-                        </td>
+                        <th style="width:70%">Tên danh mục</th>
+                        <th style="width:30%">Thao tác</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr>
+                            <td class="align-middle">@category.Name</td>
+                            <td class="align-middle">
+                                <a asp-action="Display" asp-route-id="@category.Id" class="btn btn-info btn-sm rounded-pill shadow-sm me-2">Xem</a>
+                                <a asp-action="Update" asp-route-id="@category.Id" class="btn btn-warning btn-sm rounded-pill shadow-sm me-2">Sửa</a>
+                                <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger btn-sm rounded-pill shadow-sm">Xóa</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div id="noResults" class="text-center py-4" style="display: none;">
+            <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+            <h5 class="text-muted mt-2">Không tìm thấy danh mục nào</h5>
+            <p class="text-muted">Thử thay đổi từ khóa tìm kiếm</p>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const searchInput = $('#searchInput');
+            const categoryTable = $('#categoryTable tbody');
+            const noResults = $('#noResults');
+
+            function filterCategories() {
+                const searchTerm = searchInput.val().toLowerCase();
+                let visibleCount = 0;
+
+                categoryTable.find('tr').each(function() {
+                    const row = $(this);
+                    const categoryName = row.find('td:first').text().toLowerCase();
+                    
+                    if (categoryName.includes(searchTerm)) {
+                        row.show();
+                        visibleCount++;
+                    } else {
+                        row.hide();
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    categoryTable.hide();
+                    noResults.show();
+                } else {
+                    categoryTable.show();
+                    noResults.hide();
+                }
+            }
+
+            searchInput.on('input', filterCategories);
+        });
+    </script>
+}
