@@ -22,6 +22,12 @@ namespace ThinhGiangDuocThong_DoAnWeb.Models
             Items.RemoveAll(i => i.ProductId == productId);
         }
         
+        // Phương thức tính tổng tiền
+        public decimal GetTotal()
+        {
+            return Items.Sum(item => item.Price * item.Quantity);
+        }
+        
         // Các phương thức khác...
     }
 } 

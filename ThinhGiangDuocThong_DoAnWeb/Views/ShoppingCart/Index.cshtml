@@ -34,12 +34,10 @@ else
             <tbody>
                 @{
                     int stt = 1;
-                    decimal tongTien = 0;
                 }
                 @foreach (var item in Model.Items)
                 {
                     var thanhTien = item.Price * item.Quantity;
-                    tongTien += thanhTien;
                     <tr class="text-center cart-item" data-product-id="@item.ProductId" data-price="@item.Price">
                         <td>@stt</td>
                         <td class="text-start">@item.Name</td>
@@ -76,7 +74,7 @@ else
     <div class="d-flex justify-content-between align-items-center mt-4">
         <div class="fs-4" style="color:#d32f2f;">
             <span style="font-size:1.5rem;">💰</span>
-            <b>Tổng tiền: <span id="total-amount">@tongTien.ToString("N2")</span></b>
+            <b>Tổng tiền: <span id="total-amount">@Model.GetTotal().ToString("N2")</span></b>
         </div>
         <a asp-action="Checkout" class="btn btn-success btn-lg fw-bold shadow-sm">
             <span style="font-size:1.2rem;">🛒</span> Tới trang thanh toán
@@ -125,9 +123,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const quantity = parseInt(input.value);
         const subtotal = price * quantity;
         
-        // Cập nhật thành tiền trong bảng
+        // Cập nhật thành tiền trong bảng với định dạng Việt Nam
         const subtotalCell = row.querySelector('.subtotal-cell');
-        subtotalCell.textContent = subtotal.toLocaleString('vi-VN', { minimumFractionDigits: 2 });
+        subtotalCell.textContent = subtotal.toLocaleString('vi-VN', { 
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
         
         // Cập nhật tổng tiền
         updateTotalAmount();
@@ -137,10 +138,21 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTotalAmount() {
         let total = 0;
         document.querySelectorAll('.subtotal-cell').forEach(function(cell) {
-            total += parseFloat(cell.textContent.replace(/[^\d.-]/g, ''));
+            // Parse số tiền từ định dạng Việt Nam (ví dụ: "1,234.56" -> 1234.56)
+            const text = cell.textContent.trim();
+            // Loại bỏ tất cả ký tự không phải số, dấu chấm và dấu phẩy
+            const cleanText = text.replace(/[^\d.,]/g, '');
+            // Thay thế dấu phẩy bằng dấu chấm để parse đúng số thập phân
+            const numberText = cleanText.replace(',', '.');
+            const amount = parseFloat(numberText) || 0;
+            total += amount;
         });
         
-        document.getElementById('total-amount').textContent = total.toLocaleString('vi-VN', { minimumFractionDigits: 2 });
+        // Format tổng tiền theo định dạng Việt Nam
+        document.getElementById('total-amount').textContent = total.toLocaleString('vi-VN', { 
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     }
     
     // Hàm hiển thị trạng thái cập nhật

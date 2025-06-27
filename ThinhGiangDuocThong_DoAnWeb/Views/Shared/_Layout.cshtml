@@ -1,8 +1,10 @@
 ﻿@using ThinhGiangDuocThong_DoAnWeb.Extensions
 @using ThinhGiangDuocThong_DoAnWeb.Models
 @using Microsoft.AspNetCore.Identity
+@using ThinhGiangDuocThong_DoAnWeb.Repositories
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@inject ICategoryRepository CategoryRepository
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,6 +20,43 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <style>
         /* Giữ lại các CSS khác, xóa phần search bar */
+        .search-form {
+            max-width: 300px;
+        }
+        
+        .search-input {
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #dee2e6;
+            border-right: none;
+        }
+        
+        .search-btn {
+            border-radius: 0 20px 20px 0;
+            border: 1px solid #dee2e6;
+            border-left: none;
+            background-color: #fff;
+        }
+        
+        .search-btn:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .category-dropdown {
+            min-width: 200px;
+        }
+        
+        .category-dropdown .dropdown-item {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .category-dropdown .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .category-dropdown .dropdown-item:hover {
+            background-color: #e9ecef;
+        }
     </style>
 </head>
 <body style="font-family: 'Roboto', sans-serif; background: #f8f9fa; min-height: 100vh; display: flex; flex-direction: column;">
@@ -35,6 +74,36 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
+                        
+                        <!-- Dropdown Danh mục -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-list me-1"></i>Danh mục
+                            </a>
+                            <ul class="dropdown-menu category-dropdown" aria-labelledby="categoryDropdown">
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="Index"><i class="fas fa-th-large me-2"></i>Tất cả sản phẩm</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                @{
+                                    var categories = CategoryRepository.GetAllAsync().Result;
+                                    foreach (var category in categories)
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index" asp-route-categoryId="@category.Id">
+                                            <i class="fas fa-book me-2"></i>@category.Name
+                                        </a></li>
+                                    }
+                                }
+                            </ul>
+                        </li>
+                        
+                        <!-- Lịch sử mua hàng - chỉ hiển thị khi đã đăng nhập -->
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="OrderHistory" asp-action="Index">
+                                    <i class="fas fa-history me-1"></i>Lịch sử mua hàng
+                                </a>
+                            </li>
+                        }
                       
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole(SD.Role_Admin))
                         {
@@ -53,6 +122,15 @@
                         }
                         <!-- Thêm các mục menu khác nếu cần -->
                     </ul>
+                    
+                    <!-- Ô tìm kiếm sản phẩm -->
+                    <form class="d-flex search-form mx-auto w-100 w-md-auto my-2 my-md-0" asp-controller="Home" asp-action="Index" method="get">
+                        <input class="form-control search-input" type="search" name="searchTerm" placeholder="Tìm kiếm sách..." aria-label="Search" value="@Context.Request.Query["searchTerm"]">
+                        <button class="btn search-btn" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link position-relative" asp-area="" asp-controller="ShoppingCart" asp-action="Index" title="Giỏ hàng">
@@ -80,7 +158,7 @@
             @RenderBody()
         </main>
     </div>
-    <footer id="mainFooter" class="footer mt-auto py-3 bg-dark text-light" style="display: none; opacity: 0; transition: opacity 0.4s;">
+    <footer id="mainFooter" class="footer mt-auto py-3 bg-dark text-light">
         <div class="container">
             <div class="row py-3">
                 <div class="col-md-4 mb-3 mb-md-0">

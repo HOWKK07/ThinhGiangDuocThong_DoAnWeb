@@ -76,23 +76,29 @@ namespace ThinhGiangDuocThong_DoAnWeb.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
-            [Required]
-            [Display(Name = "FullName")]
+            [Required(ErrorMessage = "Vui lòng nhập họ và tên")]
+            [Display(Name = "Họ và tên")]
             public string FullName { get; set; }
 
-            [Required]
-            [Display(Name = "Address")]
+            [Required(ErrorMessage = "Vui lòng nhập địa chỉ")]
+            [Display(Name = "Địa chỉ")]
             public string Address { get; set; }
 
-            [Required]
-            [Display(Name = "Age")]
+            [Required(ErrorMessage = "Vui lòng nhập tuổi")]
+            [Display(Name = "Tuổi")]
             public string Age { get; set; }
+
+            [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+            [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+            [Display(Name = "Số điện thoại")]
+            public string PhoneNumber { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "Vui lòng nhập email")]
+            [EmailAddress(ErrorMessage = "Email không hợp lệ")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
@@ -100,10 +106,10 @@ namespace ThinhGiangDuocThong_DoAnWeb.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
+            [StringLength(100, ErrorMessage = "Mật khẩu phải có ít nhất {2} ký tự và tối đa {1} ký tự.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Mật khẩu")]
             public string Password { get; set; }
 
             /// <summary>
@@ -111,8 +117,8 @@ namespace ThinhGiangDuocThong_DoAnWeb.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Xác nhận mật khẩu")]
+            [Compare("Password", ErrorMessage = "Mật khẩu xác nhận không khớp.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -138,6 +144,7 @@ namespace ThinhGiangDuocThong_DoAnWeb.Areas.Identity.Pages.Account
                 user.FullName = Input.FullName;
                 user.Address = Input.Address;
                 user.Age = Input.Age;
+                user.PhoneNumber = Input.PhoneNumber;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);

@@ -123,7 +123,7 @@ namespace ThinhGiangDuocThong_DoAnWeb.Controllers
             //Ngày đặt
             order.OrderDate = DateTime.UtcNow;
             //Tổng giá
-            order.TotalPrice = cart.Items.Sum(i => i.Price * i.Quantity);
+            order.TotalPrice = cart.GetTotal();
             //Danh sách sản phẩm chi tiết
             order.OrderDetails = cart.Items.Select(i => new OrderDetail
             {
