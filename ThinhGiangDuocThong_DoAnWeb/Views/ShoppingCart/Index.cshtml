@@ -7,7 +7,7 @@
     ViewData["Title"] = "Giỏ Hàng";
 }
 
-<h2 class="text-center my-4" style="font-size:2rem;">
+<h2 class="text-center my-4 text-danger" style="font-size:2rem;">
     <span style="font-size:2rem;">🛒</span> Giỏ Hàng Của Bạn
 </h2>
 
@@ -21,7 +21,7 @@ else
 {
     <div class="table-responsive">
         <table class="table table-bordered align-middle shadow-sm bg-white">
-            <thead class="table-primary text-center">
+            <thead class="table-danger text-center">
                 <tr>
                     <th style="width:5%;">#</th>
                     <th style="width:35%;">Tên sản phẩm</th>
@@ -74,11 +74,11 @@ else
         </table>
     </div>
     <div class="d-flex justify-content-between align-items-center mt-4">
-        <div class="fs-4" style="color:#d32f2f;">
+        <div class="fs-4 text-danger">
             <span style="font-size:1.5rem;">💰</span>
             <b>Tổng tiền: <span id="total-amount">@tongTien.ToString("N2")</span></b>
         </div>
-        <a asp-action="Checkout" class="btn btn-success btn-lg fw-bold shadow-sm">
+        <a asp-action="Checkout" class="btn btn-danger btn-lg fw-bold shadow-sm rounded-pill px-4">
             <span style="font-size:1.2rem;">🛒</span> Tới trang thanh toán
         </a>
     </div>

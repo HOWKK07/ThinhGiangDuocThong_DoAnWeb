@@ -42,5 +42,18 @@ namespace ThinhGiangDuocThong_DoAnWeb.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchProduct(string term)
+        {
+            var products = await _productRepository.SearchByNameAsync(term ?? "");
+            var result = products.Select(p => new {
+                id = p.Id,
+                name = p.Name,
+                price = p.Price,
+                imageUrl = (p.Images != null && p.Images.Count > 0) ? p.Images[0].Url : (p.ImageUrl ?? "/images/default.png")
+            });
+            return Json(result);
+        }
     }
 }

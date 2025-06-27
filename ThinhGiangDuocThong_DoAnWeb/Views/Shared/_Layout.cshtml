@@ -4,70 +4,155 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ThinhGiangDuocThong_DoAnWeb</title>
+    <title>@ViewData["Title"] - Bán Sách.com</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ThinhGiangDuocThong_DoAnWeb.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Views/Shared/_Layout.cshtml.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        body { font-family: 'Roboto', sans-serif; background: #f8f9fa; }
+        .navbar-red {
+            background: linear-gradient(90deg, #d32f2f 80%, #ff7043 100%);
+            box-shadow: 0 2px 12px rgba(211,47,47,0.08);
+        }
+        .navbar-brand {
+            background: #fff;
+            border-radius: 50px;
+            padding: 6px 18px;
+            box-shadow: 0 2px 8px rgba(211,47,47,0.10);
+            font-size: 1.5rem;
+        }
+        .navbar-brand span {
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .nav-link, .navbar-brand { color: #fff !important; }
+        .nav-link.active, .nav-link:hover {
+            background: #fff3e0;
+            color: #d32f2f !important;
+            box-shadow: 0 2px 8px rgba(211,47,47,0.10);
+            border-radius: 2rem;
+        }
+        .navbar .dropdown-menu {
+            border-radius: 1rem;
+            box-shadow: 0 4px 16px rgba(211,47,47,0.12);
+            border: none;
+            min-width: 220px;
+        }
+        .navbar .dropdown-item:active, .navbar .dropdown-item:hover {
+            background: #ffd6d6;
+            color: #d32f2f;
+        }
+        #searchForm {
+            position: relative;
+            min-width: 320px;
+        }
+        #searchBox {
+            border-radius: 2rem;
+            padding-left: 2.5rem;
+            box-shadow: 0 2px 8px rgba(211,47,47,0.08);
+        }
+        #searchForm::before {
+            content: '\f002';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d32f2f;
+            font-size: 1.1rem;
+        }
+        .cart-badge {
+            background: #ffd600;
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border-radius: 50%;
+            padding: 4px 8px;
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            box-shadow: 0 2px 8px rgba(211,47,47,0.10);
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #fff3e0;
+            box-shadow: 0 2px 8px rgba(211,47,47,0.10);
+        }
+        .footer-red {
+            background: linear-gradient(90deg, #d32f2f 80%, #ff7043 100%);
+            color: #fff;
+        }
+        .footer-red a { color: #fff; transition: color 0.2s; }
+        .footer-red a:hover { color: #ffd600; }
+        .footer-red .fa-brands, .footer-red .fa { font-size: 2rem; margin-right: 10px; }
+        .footer-red .fa-brands:hover, .footer-red .fa:hover { color: #ffd600; }
+        .search-suggestions { z-index: 2000; }
+    </style>
 </head>
-<body style="font-family: 'Roboto', sans-serif; background: #f8f9fa; min-height: 100vh; display: flex; flex-direction: column;">
+<body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-red shadow-sm sticky-top py-2">
             <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                    <span class="fw-bold">Bán Sách.com</span>
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-book fa-lg text-danger"></i>
+                    <span>Bán Sách.com</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav mb-2 mb-lg-0">
+                    <ul class="navbar-nav mb-2 mb-lg-0 ms-3">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
-                      
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole(SD.Role_Admin))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="quanlyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Quản lý
+                                    <i class="fa-solid fa-gears me-1"></i> Quản lý
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="quanlyDropdown">
-                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Quản lý sách</a></li>
-                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Quản lý danh mục</a></li>
-                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">Quản lý tài khoản</a></li>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index"><i class="fa-solid fa-book me-2 text-danger"></i>Quản lý sách</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index"><i class="fa-solid fa-list me-2 text-danger"></i>Quản lý danh mục</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index"><i class="fa-solid fa-users me-2 text-danger"></i>Quản lý tài khoản</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Order" asp-action="Index">Quản lý đơn hàng</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Order" asp-action="Index"><i class="fa-solid fa-receipt me-2 text-danger"></i>Quản lý đơn hàng</a></li>
                                 </ul>
                             </li>
                         }
-                        <!-- Thêm các mục menu khác nếu cần -->
                     </ul>
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
+                    <form class="d-flex position-relative me-3 ms-auto" id="searchForm" autocomplete="off">
+                        <input class="form-control me-2" type="search" id="searchBox" placeholder="Tìm kiếm sách..." aria-label="Search">
+                        <div id="searchSuggestions" class="search-suggestions"></div>
+                    </form>
+                    <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
+                        <li class="nav-item position-relative me-2">
                             <a class="nav-link position-relative" asp-area="" asp-controller="ShoppingCart" asp-action="Index" title="Giỏ hàng">
-                                <span style="font-size: 1.2rem;">🛒</span>
+                                <i class="fa-solid fa-cart-shopping fa-lg"></i>
                                 @{
                                     var cart = Context.Session.GetObjectFromJson<ShoppingCart>("Cart");
                                     var itemCount = cart?.Items?.Count ?? 0;
                                 }
                                 @if (itemCount > 0)
                                 {
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                                        @itemCount
-                                    </span>
+                                    <span class="cart-badge">@itemCount</span>
                                 }
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <partial name="_LoginPartial" />
+                        </li>
                     </ul>
-                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -77,68 +162,43 @@
             @RenderBody()
         </main>
     </div>
-    <footer id="mainFooter" class="footer mt-auto py-3 bg-dark text-light" style="display: none; opacity: 0; transition: opacity 0.4s;">
+    <footer class="footer-red mt-auto py-4">
         <div class="container">
-            <div class="row py-3">
+            <div class="row">
                 <div class="col-md-4 mb-3 mb-md-0">
                     <h6 class="text-uppercase fw-bold mb-2">Bán Sách.com</h6>
                     <p class="mb-1">Nền tảng mua bán sách trực tuyến uy tín, đa dạng thể loại, giá tốt cho mọi nhà.</p>
-                    <div class="d-flex gap-2 mt-2">
-                        <a href="#" class="text-light" title="Facebook"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-light" title="Instagram"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-light" title="Email"><i class="bi bi-envelope"></i></a>
+                    <div class="d-flex gap-3 mt-2">
+                        <a href="#" title="Facebook"><i class="fab fa-facebook fa-brands"></i></a>
+                        <a href="#" title="Instagram"><i class="fab fa-instagram fa-brands"></i></a>
+                        <a href="#" title="Email"><i class="fa fa-envelope"></i></a>
                     </div>
                 </div>
                 <div class="col-md-4 mb-3 mb-md-0">
                     <h6 class="text-uppercase fw-bold mb-2">Liên kết nhanh</h6>
                     <ul class="list-unstyled mb-0">
-                        <li><a class="text-light text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
-                        <li><a class="text-light text-decoration-none" asp-area="" asp-controller="Home" asp-action="Privacy">Chính sách</a></li>
-
+                        <li><a class="text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                        <li><a class="text-decoration-none" asp-area="" asp-controller="Home" asp-action="Privacy">Chính sách</a></li>
                     </ul>
-                   
                 </div>
                 <div class="col-md-4">
                     <h6 class="text-uppercase fw-bold mb-2">Liên hệ</h6>
                     <ul class="list-unstyled mb-0">
-                        <li class="mb-1"><i class="bi bi-geo-alt-fill me-2"></i> 123 Đường Sách, Quận 1, TP.HCM</li>
-                        <li class="mb-1"><i class="bi bi-telephone-fill me-2"></i> 0123 456 789</li>
-                        <li><i class="bi bi-envelope-fill me-2"></i> support@bansach.com</li>
+                        <li class="mb-1"><i class="fa fa-map-marker-alt me-2"></i> 123 Đường Sách, Quận 1, TP.HCM</li>
+                        <li class="mb-1"><i class="fa fa-phone me-2"></i> 0123 456 789</li>
+                        <li><i class="fa fa-envelope me-2"></i> support@bansach.com</li>
                     </ul>
                 </div>
             </div>
-            <div class="text-center pt-3 border-top border-secondary mt-3" style="font-size:0.95rem;">
+            <div class="text-center pt-3 border-top border-light mt-3" style="font-size:0.95rem;">
                 &copy; 2025 Bán Sách.com. Đã đăng ký bản quyền.
             </div>
         </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script>
-        function updateFooterVisibility() {
-            var footer = document.getElementById('mainFooter');
-            var hasScroll = document.body.scrollHeight > window.innerHeight + 2;
-            if (!hasScroll) {
-                footer.style.display = 'block';
-                footer.style.opacity = 1;
-            } else {
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 2) {
-                    footer.style.display = 'block';
-                    setTimeout(function() { footer.style.opacity = 1; }, 10);
-                } else {
-                    footer.style.opacity = 0;
-                    setTimeout(function() { footer.style.display = 'none'; }, 400);
-                }
-            }
-        }
-        window.addEventListener('scroll', updateFooterVisibility);
-        window.addEventListener('resize', updateFooterVisibility);
-        window.addEventListener('DOMContentLoaded', updateFooterVisibility);
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

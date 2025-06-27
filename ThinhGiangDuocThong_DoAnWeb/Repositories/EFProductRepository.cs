@@ -13,7 +13,7 @@ namespace ThinhGiangDuocThong_DoAnWeb.Repositories
         }
 
         /// <summary>
-        /// L?y v? toàn b? danh sách s?n ph?m, bao g?m thông tin danh m?c và hình ?nh
+        /// L?y v? toï¿½n b? danh sï¿½ch s?n ph?m, bao g?m thï¿½ng tin danh m?c vï¿½ hï¿½nh ?nh
         /// </summary>
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
@@ -24,7 +24,7 @@ namespace ThinhGiangDuocThong_DoAnWeb.Repositories
         }
 
         /// <summary>
-        /// L?y thông tin s?n ph?m theo ID, bao g?m thông tin danh m?c và hình ?nh
+        /// L?y thï¿½ng tin s?n ph?m theo ID, bao g?m thï¿½ng tin danh m?c vï¿½ hï¿½nh ?nh
         /// </summary>
         public async Task<Product?> GetByIdAsync(int id)
         {
@@ -35,7 +35,7 @@ namespace ThinhGiangDuocThong_DoAnWeb.Repositories
         }
 
         /// <summary>
-        /// L?y danh sách s?n ph?m theo CategoryId, bao g?m thông tin danh m?c và hình ?nh
+        /// L?y danh sï¿½ch s?n ph?m theo CategoryId, bao g?m thï¿½ng tin danh m?c vï¿½ hï¿½nh ?nh
         /// </summary>
         public async Task<IEnumerable<Product>> GetByCategoryIdAsync(int categoryId)
         {
@@ -66,6 +66,16 @@ namespace ThinhGiangDuocThong_DoAnWeb.Repositories
                 _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<IEnumerable<Product>> SearchByNameAsync(string term)
+        {
+            return await _context.Products
+                .Include(p => p.Images)
+                .Where(p => p.Name.Contains(term))
+                .OrderBy(p => p.Name)
+                .Take(7)
+                .ToListAsync();
         }
     }
 }

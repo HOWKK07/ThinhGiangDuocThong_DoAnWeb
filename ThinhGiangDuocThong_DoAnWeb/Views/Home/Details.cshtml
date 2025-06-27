@@ -47,13 +47,13 @@
             <div class="card shadow-lg border-0">
                 <div class="card-body p-4">
                     <!-- Product Title -->
-                    <h1 class="fw-bold mb-3" style="color: #2c3e50;">@Model.Name</h1>
+                    <h1 class="fw-bold mb-3 text-danger">@Model.Name</h1>
                     
                     <!-- Category Badge -->
                     @if (Model.Category != null)
                     {
                         <div class="mb-3">
-                            <span class="badge bg-primary fs-6 px-3 py-2">
+                            <span class="badge bg-danger fs-6 px-3 py-2">
                                 <span style="font-size:1rem;">📂</span> @Model.Category.Name
                             </span>
                         </div>
@@ -61,7 +61,7 @@
 
                     <!-- Price -->
                     <div class="mb-4">
-                        <span class="display-6 fw-bold text-success">
+                        <span class="display-6 fw-bold text-danger">
                             <span style="font-size:2rem;">💰</span> @Model.Price.ToString("N0") ₫
                         </span>
                     </div>
@@ -125,7 +125,7 @@
                     @if (!string.IsNullOrEmpty(Model.Description))
                     {
                         <div class="mb-4">
-                            <h5 class="fw-bold mb-3">
+                            <h5 class="fw-bold mb-3 text-danger">
                                 <span style="font-size:1.2rem;">📖</span> Mô tả sản phẩm
                             </h5>
                             <p class="text-muted" style="line-height: 1.8;">@Model.Description</p>
@@ -135,7 +135,7 @@
                     <!-- Add to Cart Section -->
                     <div class="card bg-light border-0 mb-4">
                         <div class="card-body">
-                            <h6 class="fw-bold mb-3">
+                            <h6 class="fw-bold mb-3 text-danger">
                                 <span style="font-size:1.2rem;">🛒</span> Thêm vào giỏ hàng
                             </h6>
                             <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post" class="d-flex gap-3 align-items-end">
@@ -146,7 +146,7 @@
                                            class="form-control form-control-lg rounded-pill" 
                                            style="width: 120px;" />
                                 </div>
-                                <button type="submit" class="btn btn-success btn-lg rounded-pill px-4 shadow-sm fw-bold">
+                                <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4 shadow-sm fw-bold">
                                     <span style="font-size:1.3rem;">🛒</span> Thêm vào giỏ
                                 </button>
                             </form>
@@ -185,7 +185,7 @@
     <!-- Related Products Section (Placeholder) -->
     <div class="row mt-5">
         <div class="col-12">
-            <h3 class="fw-bold mb-4">
+            <h3 class="fw-bold mb-4 text-danger">
                 <span style="font-size:1.5rem;">📚</span> Sản phẩm liên quan
             </h3>
             <div class="alert alert-info text-center">
@@ -200,7 +200,7 @@
 <style>
     .breadcrumb-item + .breadcrumb-item::before {
         content: ">";
-        color: #6c757d;
+        color: #d32f2f;
     }
     
     .card {

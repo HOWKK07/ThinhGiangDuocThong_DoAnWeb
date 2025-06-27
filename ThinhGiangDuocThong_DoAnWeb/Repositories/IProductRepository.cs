@@ -10,5 +10,6 @@ namespace ThinhGiangDuocThong_DoAnWeb.Repositories
         Task AddAsync(Product product);
         Task UpdateAsync(Product product);
         Task DeleteAsync(int id);
+        Task<IEnumerable<Product>> SearchByNameAsync(string term);
     }
 }

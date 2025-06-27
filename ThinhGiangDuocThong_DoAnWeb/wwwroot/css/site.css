@@ -20,3 +20,130 @@ html {
 body {
   /* margin-bottom: 60px; */
 }
+
+/* Gợi ý tìm kiếm sản phẩm */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    width: 100%;
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.search-suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+.search-suggestion-item img {
+    width: 50px;
+    height: 70px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+.search-suggestion-item:last-child {
+    border-bottom: none;
+}
+.search-suggestion-item:hover {
+    background: #f0f0f0;
+}
+
+/* Responsive cho searchForm từ Index.cshtml */
+@media (max-width: 991px) {
+    #searchForm { min-width: 180px; }
+}
+
+/* --- Auth Forms Modern Style --- */
+.auth-container {
+    max-width: 420px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 1.5rem;
+    box-shadow: 0 6px 32px rgba(211,47,47,0.10), 0 1.5px 8px rgba(0,0,0,0.04);
+    padding: 2.5rem 2rem 2rem 2rem;
+    border: 1.5px solid #ffd6d6;
+    position: relative;
+}
+.auth-container h1, .auth-container h2 {
+    color: #d32f2f;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.auth-container form .form-floating > .form-control {
+    border-radius: 1rem;
+    border: 1.5px solid #ffd6d6;
+    box-shadow: 0 1px 4px rgba(211,47,47,0.04);
+    background: #fff8f8;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.auth-container form .form-floating > .form-control:focus {
+    border-color: #d32f2f;
+    box-shadow: 0 0 0 2px #ffd6d6;
+    background: #fff;
+}
+.auth-container .btn-primary {
+    background: linear-gradient(90deg, #d32f2f 80%, #ff7043 100%);
+    border: none;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(211,47,47,0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.auth-container .btn-primary:hover, .auth-container .btn-primary:focus {
+    background: linear-gradient(90deg, #b71c1c 80%, #ff7043 100%);
+    box-shadow: 0 4px 16px rgba(211,47,47,0.16);
+}
+.auth-container .form-check-input:checked {
+    background-color: #d32f2f;
+    border-color: #d32f2f;
+}
+.auth-container .form-check-input:focus {
+    box-shadow: 0 0 0 2px #ffd6d6;
+}
+.auth-container .text-danger {
+    font-size: 0.98rem;
+    margin-top: 2px;
+}
+.auth-container .form-label, .auth-container label {
+    color: #d32f2f;
+    font-weight: 500;
+}
+.auth-container .form-floating > label {
+    color: #b71c1c;
+    font-weight: 500;
+}
+.auth-container .checkbox label {
+    color: #d32f2f;
+    font-weight: 500;
+}
+.auth-container .external-login-btns .btn {
+    margin-bottom: 0.5rem;
+    border-radius: 2rem;
+    font-weight: 500;
+    background: #fff3e0;
+    color: #d32f2f;
+    border: 1.5px solid #ffd6d6;
+    transition: background 0.2s, color 0.2s;
+}
+.auth-container .external-login-btns .btn:hover {
+    background: #ffd6d6;
+    color: #b71c1c;
+}
+@media (max-width: 600px) {
+    .auth-container {
+        padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+        max-width: 98vw;
+    }
+}
